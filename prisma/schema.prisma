@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid()) // Automatically generates a unique random ID
+  name      String
+  email     String    @unique
+  phone     String? // The '?' means this is optional
+  addresses Address[] // A user can have multiple addresses!
+  createdAt DateTime  @default(now())
+  orders    Order[]
+  password  String?
+  role      String    @default("CUSTOMER")
+}
+
+model Address {
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id]) // This links the address to the User table
+  street  String
+  city    String
+  state   String
+  pincode String
+  orders  Order[]
+}
+
+model Product {
+  id                  String           @id @default(cuid())
+  name                String
+  price               Float
+  category            String
+  countryOfOrigin     String
+  washingInstructions String
+  storageInstructions String
+  imageUrl            String?
+  variants            ProductVariant[]
+}
+
+model ProductVariant {
+  id String @id @default(cuid())
+
+  // This is the link (Relation) to the parent Product 
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  size       String
+  color      String
+  stock      Int         @default(0)
+  orderItems OrderItem[]
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  addressId         String
+  address           Address     @relation(fields: [addressId], references: [id])
+  status            String      @default("PENDING") // PENDING, PAID, SHIPPED
+  totalAmount       Float
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  orderItems        OrderItem[]
+  createdAt         DateTime    @default(now())
+}
+
+model OrderItem {
+  id               String         @id @default(cuid())
+  orderId          String
+  order            Order          @relation(fields: [orderId], references: [id])
+  productVariantId String
+  variant          ProductVariant @relation(fields: [productVariantId], references: [id])
+  quantity         Int
+  priceAtPurchase  Float // We save the price here in case the shirt goes on sale later!
+}

@@ -1,73 +1,63 @@
-# DeeT-X Fashion — Master Architecture & Interview Defense Playbook
+# DeeT-X Personal Full-Stack Playbook
 
-This document is your **single source of truth** for understanding every core concept, architectural decision, and interview defense question in the DeeT-X Fashion project.
-
----
-
-## 1. Core Architecture Overview
-
-### The Meta-Framework Advantage (Next.js vs MERN)
-- **VakeelEasy (Standard MERN):** Separate Frontend (React on Port 5173) and Backend (Express on Port 5000). Communication required manual `axios` / `fetch` HTTP calls, manual state updates, and CORS configuration.
-- **DeeT-X (Next.js App Router):** A unified full-stack meta-framework. Frontend and Backend co-exist in one codebase. 
-  - **Server Components:** Pages execute directly on the Node.js server before sending compiled HTML to the browser.
-  - **Server Actions:** Secure background RPC (Remote Procedure Call) functions that execute on the server when forms are submitted (`"use server"`).
+*This document tracks developer profile, recurring web dev mistakes, mastered patterns, and project feature status specifically for **DeeT-X Fashion**.*
 
 ---
 
-## 2. Key Interview Defense Questions & Explanations
+## 🧠 Reasoning & Developer Profile (DeeT-X Scope)
 
-### Q1: Why is `key={product.id}` mandatory inside `.map()` in React?
-- **Mechanics:** React uses a virtual representation of the DOM (Virtual DOM) to determine what changed on the screen.
-- **Why it matters:** When rendering a list of items dynamically (e.g. products), React uses the unique `key` identifier to track which specific item was added, updated, or removed.
-- **What breaks if missing:** Without unique keys, React re-renders the *entire list* on every minor state update instead of updating only the changed element, leading to UI bugs (like input state jumping) and poor performance.
+### Strengths:
+- **Strong Aesthetics & Design Sense:** Great instinct for modern typography, responsive Tailwind layouts, and micro-animations.
+- **Real Business Focus:** Building for an actual physical garment store gives strong real-world motivation and domain clarity.
 
----
-
-### Q2: Why fetch `prisma.product.findMany()` directly inside `HomePage()` instead of `useEffect()` + `fetch()`?
-- **Server Components:** `HomePage()` is an `async` Server Component. It executes on the Node.js server *before* sending HTML to the client browser.
-- **Benefits:**
-  1. **Zero Client Waterfall:** The browser receives pre-populated HTML instantly (SSR / Server Side Rendering), eliminating blank loading spinners for SEO.
-  2. **Security:** The database query happens inside the secure server memory. Your PostgreSQL database URL and credentials are never exposed to the client browser.
-  3. **No API Boilerplate:** Eliminates the need to write an intermediary API route just to proxy data to your own component.
+### Weaknesses & Risk Patterns to Monitor:
+- **Boilerplate Waving:** Tendency to treat API setup, Prisma models, and config files as "plumbing" to copy-paste rather than code to scrutinize.
+- **Server vs Client Boundary Leaks:** Accidentally importing server-only packages into client components or putting `'use client'` on pages that could remain Server Components.
+- **Scope Creep Temptation:** Wanting to add multiple complex features before the primary Phase A differentiator is deployed and defensible.
 
 ---
 
-### Q3: What happens at runtime if you call `.toUpperCase()` on `product.price`?
-- **Type Mismatch:** `price` is defined in PostgreSQL / Prisma schema as a `Float` (a primitive Number, e.g. `1499.00`).
-- **Runtime Failure:** `.toUpperCase()` is a string prototype method. Calling a string method on a number primitive throws an unhandled `TypeError: product.price.toUpperCase is not a function` at runtime, causing a 500 Internal Server Error.
-- **Fix:** Convert to string first (`product.price.toString().toUpperCase()`) or format with `Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })`.
+## 🚨 Web Dev Mistake Journal (DeeT-X Tagged)
+
+*(Check this list before writing new API endpoints or components)*
+
+1. **Forgotten `await` on Async Calls:**
+   - *Trap:* Next.js 14+ params, cookies, and Prisma calls are async. Forgetting `await` returns a pending promise and causes silent UI bugs.
+   - *Fix:* Always inspect function signatures—if it returns `Promise<T>`, you MUST `await` it.
+
+2. **Missing Loading & Error States:**
+   - *Trap:* Leaving component screens blank while fetching data.
+   - *Fix:* Always implement `loading.tsx` skeleton screens and `error.tsx` error boundaries in App Router route folders.
+
+3. **Unvalidated Form Data:**
+   - *Trap:* Trusting client-side form values directly inside Server Actions.
+   - *Fix:* Always run input through a `zod` schema parser on the server side before passing to Prisma queries.
+
+4. **Missing Key Props in Loops:**
+   - *Trap:* Mapping over arrays (`products.map(...)`) without a unique `key={product.id}` prop.
+   - *Fix:* Never use index as key if items can be reordered or deleted. Use unique database IDs.
 
 ---
 
-## 3. Database Singleton Pattern (`src/lib/prisma.ts`)
+## 🛡️ Mastered Patterns (DeeT-X Isolated)
 
-### Why do we use `globalThis` for PrismaClient?
-```typescript
-import { PrismaClient } from "@prisma/client";
+> ⚠️ **Rule:** Mastery earned in other workspaces (e.g. VakeelEasy) does NOT carry over to DeeT-X. Patterns earn reduced scaffolding here ONLY after being written and gatekept twice inside this workspace.
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-export const prisma = globalForPrisma.prisma || new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-```
-
-- **Explanation:** In development mode (`npm run dev`), Next.js uses Hot Module Replacement (HMR) to re-evaluate code on every file save. 
-- **The Risk:** If we simply ran `new PrismaClient()` at the top-level without caching, every file edit would instantiate a new database connection. Within minutes, PostgreSQL would run out of available connection sockets and throw a `Too Many Connections` error.
-- **The Solution:** We attach the single PrismaClient instance to `globalThis` so it is recycled across hot-reloads during development.
+| Pattern | Status | Verification Date |
+| :--- | :--- | :--- |
+| Next.js App Router Layouts & Routing | 🟡 In Progress | - |
+| Server Actions + Zod Validation | 🟡 In Progress | - |
+| Prisma Schema & Migrations | 🟡 In Progress | - |
+| Zustand Cart State Management | 🔴 Not Started | - |
+| Phase A Algorithmic Differentiator | 🔴 Not Started | - |
 
 ---
 
-## 4. Server Actions ("use server")
+## 📋 Feature Ledger & Roadmap
 
-### What makes Server Actions special?
-```typescript
-async function createProduct(formData: FormData) {
-  "use server";
-  const name = formData.get("name") as string;
-  await prisma.product.create({ data: { name, ... } });
-  redirect("/admin");
-}
-```
-- **Explanation:** Marking a function or file with `"use server"` instructs Next.js to strip that function out of the client JavaScript bundle and turn it into a private server endpoint.
-- **Data Flow:** `<form action={createProduct}>` -> Browser serializes inputs into `FormData` -> Next.js POSTs `FormData` to the server-side RPC -> Server executes Prisma query -> Server triggers path revalidation or redirect -> Browser renders updated UI.
+- [ ] **Core Setup:** Next.js 14 + Tailwind CSS + Prisma + PostgreSQL schema.
+- [ ] **Product Catalog:** Categories, product grid, product detail dynamic pages (`/products/[id]`).
+- [ ] **Phase A Differentiator:** Algorithmic Recommendation / Ranking Engine.
+- [ ] **Inventory System:** Real-time stock reservation locks.
+- [ ] **Checkout Flow:** Razorpay integration + Webhook payment verification.
+- [ ] **Admin Dashboard:** Order fulfillment status & analytics.

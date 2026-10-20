@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
-import { ShoppingBag, Search, ShieldCheck } from "lucide-react";
+import { ShoppingBag, Search, ShieldCheck, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import AuthModal from "@/components/AuthModal";
 
 export default function StorefrontNavbar() {
   const { totalItems, openDrawer } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -35,25 +37,25 @@ export default function StorefrontNavbar() {
         {/* Left: Hierarchical Category Links */}
         <nav className="flex items-center gap-6 lg:gap-8 text-xs uppercase tracking-[0.18em] font-medium">
           <Link
-            href="/?category=women"
+            href="/?category=women#catalog"
             className="hover:opacity-60 transition-opacity duration-300"
           >
             Women
           </Link>
           <Link
-            href="/?category=men"
+            href="/?category=men#catalog"
             className="hover:opacity-60 transition-opacity duration-300"
           >
             Men
           </Link>
           <Link
-            href="/?category=ethnic"
+            href="/?category=ethnic#catalog"
             className="hover:opacity-60 transition-opacity duration-300"
           >
             Ethnic
           </Link>
           <Link
-            href="/?category=western"
+            href="/?category=western#catalog"
             className="hidden sm:inline hover:opacity-60 transition-opacity duration-300"
           >
             Western
@@ -76,7 +78,7 @@ export default function StorefrontNavbar() {
           </span>
         </Link>
 
-        {/* Right: Search, Admin & Zustand Cart Drawer Trigger */}
+        {/* Right: Search, Account, Admin & Zustand Cart Drawer Trigger */}
         <div className="flex items-center gap-5 sm:gap-6">
           <button
             type="button"
@@ -84,6 +86,19 @@ export default function StorefrontNavbar() {
             className="hover:opacity-60 transition-opacity p-1"
           >
             <Search className="w-4 h-4 stroke-[1.5]" />
+          </button>
+
+          {/* Account Login / Register Modal Trigger */}
+          <button
+            type="button"
+            onClick={() => setAuthOpen(true)}
+            aria-label="Account Login or Register"
+            className="hover:opacity-60 transition-opacity p-1 flex items-center gap-1.5"
+          >
+            <User className="w-4 h-4 stroke-[1.5]" />
+            <span className="hidden lg:inline text-[10px] uppercase font-mono tracking-wider">
+              Account
+            </span>
           </button>
 
           <Link
@@ -109,6 +124,9 @@ export default function StorefrontNavbar() {
           </button>
         </div>
       </div>
+
+      {/* Editorial Luxury Auth Modal */}
+      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
     </header>
   );
 }

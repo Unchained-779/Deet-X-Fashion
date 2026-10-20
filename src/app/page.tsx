@@ -7,14 +7,36 @@ import LookbookGrid from "@/components/LookbookGrid";
 import Link from "next/link";
 import { Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{
+    category?: string;
+  }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const { category } = await searchParams;
+
+  // Filter products by category if provided in query string
   const products = await prisma.product.findMany({
-    where: { isPublished: true },
+    where: {
+      isPublished: true,
+      ...(category
+        ? {
+            category: {
+              slug: category,
+            },
+          }
+        : {}),
+    },
     include: {
       category: true,
       variants: true,
     },
     orderBy: { createdAt: "desc" },
+  });
+
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" },
   });
 
   return (
@@ -29,30 +51,86 @@ export default async function Home() {
       <LookbookGrid />
 
       {/* 3. Editorial Archival Catalog */}
-      <main id="catalog" className="max-w-7xl mx-auto px-6 sm:px-8 py-20 w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-baseline mb-12 pb-6 border-b border-[#E5E0D8] gap-4">
+      <main id="catalog" className="max-w-7xl mx-auto px-6 sm:px-8 py-20 w-full scroll-mt-24">
+        <div className="flex flex-col md:flex-row justify-between items-baseline mb-8 pb-6 border-b border-[#E5E0D8] gap-4">
           <div>
             <span className="text-[11px] font-mono tracking-[0.25em] text-accent uppercase block mb-1">
-              Handcrafted Catalogue
+              {category ? `Category: ${category.toUpperCase()}` : "Complete Handcrafted Catalogue"}
             </span>
             <h2
               style={{ fontFamily: "var(--font-editorial)" }}
               className="text-4xl sm:text-5xl font-normal text-primary"
             >
-              Archival Garments
+              {category
+                ? `${category.charAt(0).toUpperCase() + category.slice(1)} Collection`
+                : "All Garments (सभी परिधान)"}
             </h2>
           </div>
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-muted">
-              Showing {products.length} {products.length === 1 ? "edition" : "editions"}
+              Showing {products.length} {products.length === 1 ? "design" : "designs"}
             </span>
             <Link
               href="/admin/products/new"
               className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-accent hover:underline"
             >
-              Curate Piece <ArrowRight className="w-3.5 h-3.5" />
+              Add Garment <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
+        </div>
+
+        {/* Quick Filter Bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-10 pb-4 border-b border-[#E5E0D8]/60 text-xs font-mono uppercase tracking-wider">
+          <Link
+            href="/#catalog"
+            className={`px-4 py-2 border transition-colors ${
+              !category
+                ? "bg-primary text-background border-primary"
+                : "border-[#E5E0D8] bg-surface text-primary hover:border-primary"
+            }`}
+          >
+            All Pieces (सभी)
+          </Link>
+          <Link
+            href="/?category=women#catalog"
+            className={`px-4 py-2 border transition-colors ${
+              category === "women"
+                ? "bg-primary text-background border-primary"
+                : "border-[#E5E0D8] bg-surface text-primary hover:border-primary"
+            }`}
+          >
+            Women
+          </Link>
+          <Link
+            href="/?category=men#catalog"
+            className={`px-4 py-2 border transition-colors ${
+              category === "men"
+                ? "bg-primary text-background border-primary"
+                : "border-[#E5E0D8] bg-surface text-primary hover:border-primary"
+            }`}
+          >
+            Men
+          </Link>
+          <Link
+            href="/?category=ethnic#catalog"
+            className={`px-4 py-2 border transition-colors ${
+              category === "ethnic"
+                ? "bg-primary text-background border-primary"
+                : "border-[#E5E0D8] bg-surface text-primary hover:border-primary"
+            }`}
+          >
+            Ethnic Weaves
+          </Link>
+          <Link
+            href="/?category=western#catalog"
+            className={`px-4 py-2 border transition-colors ${
+              category === "western"
+                ? "bg-primary text-background border-primary"
+                : "border-[#E5E0D8] bg-surface text-primary hover:border-primary"
+            }`}
+          >
+            Western & Casuals
+          </Link>
         </div>
 
         {products.length === 0 ? (

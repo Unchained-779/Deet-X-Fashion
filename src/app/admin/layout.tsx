@@ -1,7 +1,17 @@
 import Link from "next/link";
-import { LayoutDashboard, Shirt, ShoppingCart, Store, ArrowUpRight } from "lucide-react";
+import { LayoutDashboard, Shirt, ShoppingCart, Store, ArrowUpRight, LogOut, ShieldAlert } from "lucide-react";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+
+  // Strict role check: Must be authenticated AND have role === 'ADMIN'
+  const userRole = (session?.user as any)?.role;
+  if (!session?.user || userRole !== "ADMIN") {
+    redirect("/?error=AdminAccessDenied");
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans">
       {/* Sidebar */}

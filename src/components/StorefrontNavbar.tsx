@@ -180,14 +180,14 @@ export default function StorefrontNavbar() {
               type="button"
               onClick={() => setAuthOpen(true)}
               aria-label="Account Login or Register"
-              className="hover:opacity-60 transition-opacity p-1 flex items-center gap-1.5"
+              className="hover:opacity-80 transition-opacity p-1 flex items-center gap-2 group"
             >
-              <User className="w-4 h-4 stroke-[1.5]" />
-              <div className="hidden lg:flex flex-col text-left leading-none">
-                <span className="text-[9px] font-mono tracking-wider opacity-70">
+              <User className="w-4 h-4 stroke-[2] group-hover:scale-105 transition-transform" />
+              <div className="hidden lg:flex flex-col text-left leading-tight">
+                <span className="text-[10px] font-mono tracking-wider font-medium text-white/95">
                   Hello, Sign in
                 </span>
-                <span className="text-[10px] uppercase font-mono tracking-wider font-semibold">
+                <span className="text-[11px] uppercase font-mono tracking-wider font-bold text-white drop-shadow-sm">
                   Account &amp; Lists
                 </span>
               </div>

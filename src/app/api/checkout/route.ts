@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendOrderConfirmationEmail } from "@/lib/mailer";
 
 export async function POST(req: Request) {
   try {
@@ -56,6 +57,17 @@ export async function POST(req: Request) {
             })),
           },
         },
+        include: {
+          orderItems: {
+            include: {
+              variant: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       // Deduct stock from each variant SKU
@@ -71,6 +83,29 @@ export async function POST(req: Request) {
       }
 
       return newOrder;
+    });
+
+    // 4. Dispatch Luxury Invoice Email to Buyer
+    const emailItems = order.orderItems.map((oi) => ({
+      title: oi.variant.product.title,
+      size: oi.variant.size,
+      colorName: oi.variant.colorName,
+      quantity: oi.quantity,
+      price: oi.priceAtPurchase,
+      imageUrl: oi.variant.images[0] || undefined,
+    }));
+
+    await sendOrderConfirmationEmail({
+      orderId: order.id,
+      customerName: customer.fullName,
+      customerEmail: customer.email,
+      customerPhone: customer.phone,
+      shippingAddress: `${customer.street}, ${customer.city}, ${customer.state} - ${customer.pincode}`,
+      items: emailItems,
+      subtotal: totalAmount > 1999 ? totalAmount : totalAmount - 99,
+      shippingFee: totalAmount > 1999 ? 0 : 99,
+      totalAmount: totalAmount,
+      estimatedDelivery: "3-4 Business Days",
     });
 
     return NextResponse.json({ success: true, orderId: order.id });

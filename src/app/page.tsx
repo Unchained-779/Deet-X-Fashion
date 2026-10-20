@@ -4,6 +4,7 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import EditorialHero from "@/components/EditorialHero";
 import LookbookGrid from "@/components/LookbookGrid";
+import PersonalizedCustomerSection from "@/components/PersonalizedCustomerSection";
 import Link from "next/link";
 import { Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
 
@@ -49,6 +50,9 @@ export default async function Home({ searchParams }: HomeProps) {
 
       {/* 2. Asymmetric 12-Column Lookbook Grid */}
       <LookbookGrid />
+
+      {/* 2.5 Personalized Customer Suite (Amazon-inspired royal experience) */}
+      <PersonalizedCustomerSection />
 
       {/* 3. Editorial Archival Catalog */}
       <main id="catalog" className="max-w-7xl mx-auto px-6 sm:px-8 py-20 w-full scroll-mt-24">

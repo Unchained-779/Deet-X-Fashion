@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import AuthProvider from "@/components/AuthProvider";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -40,9 +41,11 @@ export default function RootLayout({
       className={`${cormorant.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
     >
       <body className="antialiased bg-background text-primary selection:bg-primary selection:text-background font-sans">
-        <SmoothScrollProvider>
-          {children}
-        </SmoothScrollProvider>
+        <AuthProvider>
+          <SmoothScrollProvider>
+            {children}
+          </SmoothScrollProvider>
+        </AuthProvider>
       </body>
     </html>
   );

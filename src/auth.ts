@@ -48,15 +48,45 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        if (!user.email) return false;
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email.toLowerCase().trim() },
+          });
+
+          if (!existingUser) {
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email.toLowerCase().trim(),
+                name: user.name || "Customer",
+                role: "CUSTOMER",
+              },
+            });
+            user.id = newUser.id;
+          } else {
+            user.id = existingUser.id;
+          }
+          return true;
+        } catch (err) {
+          console.error("Error creating Google user in DB:", err);
+          return true;
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as any).role || "CUSTOMER";
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
+        (session.user as any).role = token.role as string;
       }
       return session;
     },

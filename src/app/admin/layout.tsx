@@ -8,11 +8,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-slate-900 text-white p-6 flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-2 mb-8">
-            <span className="text-xl font-black tracking-tight text-white">
-              DEET<span className="text-rose-500">-X</span>
+            <span className="text-xl font-bold tracking-tight text-white font-serif">
+              DEETA <span className="text-accent text-xs font-mono uppercase">Portal</span>
             </span>
-            <span className="text-[10px] font-bold bg-white/10 text-slate-300 px-2 py-0.5 rounded-full uppercase tracking-wider">
-              Control
+            <span className="text-[10px] font-mono bg-white/10 text-slate-300 px-2 py-0.5 rounded-none uppercase tracking-wider">
+              Shop Admin
             </span>
           </div>
 

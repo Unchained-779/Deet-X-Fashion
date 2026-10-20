@@ -161,7 +161,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>{tab === "login" ? "Continue with Google (गूगल से लॉग इन)" : "Sign Up with Google (गूगल से खाता बनाएं)"}</span>
+                <span>{tab === "login" ? "Login with Google (गूगल से लॉग इन)" : "Sign Up with Google (गूगल से खाता बनाएं)"}</span>
               </button>
 
               {/* Editorial Divider */}
@@ -190,7 +190,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                     : "text-muted hover:text-primary"
                 }`}
               >
-                Sign In (लॉग इन)
+                Login (लॉग इन)
               </button>
               <button
                 type="button"
@@ -264,7 +264,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                   disabled={loading}
                   className="w-full mt-2 py-3.5 bg-primary hover:bg-neutral-800 text-background font-mono text-xs uppercase tracking-[0.2em] transition-colors border border-primary flex items-center justify-center gap-2"
                 >
-                  {loading ? "Signing In..." : "Sign In to Account"}
+                  {loading ? "Logging in..." : "Login to Account (लॉग इन करें)"}
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </form>

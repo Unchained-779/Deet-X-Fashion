@@ -81,10 +81,10 @@ export default function ProductCard({
               style={{ fontFamily: "var(--font-editorial)" }}
               className="tracking-[0.25em] text-lg text-primary"
             >
-              DEET-X
+              DEETA
             </span>
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted mt-1">
-              Archival Piece
+              Handcrafted Collection
             </span>
           </div>
         )}
@@ -179,10 +179,10 @@ export default function ProductCard({
                 <Check className="w-3.5 h-3.5" /> Added to Bag
               </>
             ) : isOutOfStock ? (
-              "Archived / Out of Stock"
+              "Sold Out"
             ) : (
               <>
-                <ShoppingBag className="w-3.5 h-3.5" /> Acquire Piece
+                <ShoppingBag className="w-3.5 h-3.5" /> Add to Bag
               </>
             )}
           </button>

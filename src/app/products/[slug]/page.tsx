@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   if (!product) {
     return {
-      title: "Product Not Found | DeeT-X Fashion",
+      title: "Product Not Found | Deeta Fashion",
     };
   }
 
   return {
-    title: `${product.title} | DeeT-X Atelier`,
+    title: `${product.title} | Deeta Fashion`,
     description: product.description,
   };
 }

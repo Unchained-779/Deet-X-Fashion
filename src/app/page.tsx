@@ -141,18 +141,18 @@ export default async function Home() {
               style={{ fontFamily: "var(--font-editorial)" }}
               className="text-3xl tracking-[0.25em] uppercase font-normal block"
             >
-              DEET-X
+              DEETA FASHION
             </span>
             <p className="text-xs text-[#FAF8F5]/60 mt-2 max-w-sm font-sans leading-relaxed">
-              Haute couture, ancestral textiles, and contemporary silhouette design tailored for enduring celebration.
+              Handcrafted festive wear, traditional sarees, and comfortable everyday styles made with pride.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-6 font-mono text-[11px] text-[#FAF8F5]/60 tracking-wider">
             <span>GST COMPLIANT</span>
             <span className="hidden sm:inline">•</span>
-            <span>PAN-INDIA DISPATCH</span>
+            <span>ALL-INDIA DELIVERY</span>
             <span className="hidden sm:inline">•</span>
-            <span>© 2026 DEET-X ATELIER</span>
+            <span>© 2026 DEETA FASHION</span>
           </div>
         </div>
       </footer>

@@ -55,7 +55,7 @@ export default function LookbookGrid() {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#E5E0D8] gap-6">
         <div>
           <span className="text-[11px] font-mono tracking-[0.25em] text-accent uppercase block mb-2">
-            Vol. IV — Archival Lookbook
+            Deeta Fashion — Lookbook
           </span>
           <h2
             style={{ fontFamily: "var(--font-editorial)" }}
@@ -65,7 +65,7 @@ export default function LookbookGrid() {
           </h2>
         </div>
         <p className="text-xs text-muted max-w-md font-sans leading-relaxed tracking-wide">
-          An intentional study in tactile minimalism. Handwoven textiles paired with sharp, uncompromising geometry.
+          Handcrafted fabrics, traditional Indian weaves, and comfortable modern fits designed for festivals and weddings.
         </p>
       </div>
 

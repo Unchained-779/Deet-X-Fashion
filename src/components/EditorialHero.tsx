@@ -63,12 +63,12 @@ export default function EditorialHero() {
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex items-center justify-between gap-6 px-7 py-4 bg-white text-[#111111] text-xs font-semibold uppercase tracking-[0.2em] rounded-none hover:bg-surface border border-white transition-colors duration-300 w-fit group"
             >
-              <span>EXPLORE THE AUTUMN DRAPE</span>
+              <span>EXPLORE COLLECTION</span>
               <ArrowDownRight className="w-4 h-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 group-hover:translate-y-1" />
             </motion.a>
 
             <p className="text-xs text-white/70 tracking-wide font-sans max-w-xs leading-relaxed">
-              Archival drapes, pure Banarasi silk infusions, and minimalist modern tailoring.
+              Handpicked silk sarees, designer ethnic suits, and modern casuals made for every celebration.
             </p>
           </motion.div>
         </div>

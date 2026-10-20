@@ -259,14 +259,14 @@ export default function PDPClient({ product }: ProductDetailProps) {
             {/* Pill-Free Sharp Size Selector */}
             <div>
               <div className="flex items-center justify-between mb-3 text-xs font-mono uppercase tracking-wider">
-                <span className="text-muted">Select Dimension:</span>
+                <span className="text-muted">Select Size:</span>
                 <button
                   type="button"
                   onClick={() => setSizeGuideOpen(true)}
                   className="text-primary hover:text-accent flex items-center gap-1.5 transition-colors underline decoration-[#E5E0D8] underline-offset-4"
                 >
                   <Ruler className="w-3.5 h-3.5" />
-                  <span>Find Your Fit</span>
+                  <span>Size Guide</span>
                 </button>
               </div>
 
@@ -312,20 +312,20 @@ export default function PDPClient({ product }: ProductDetailProps) {
                     <Check className="w-4 h-4" /> Added to Shopping Bag
                   </>
                 ) : isOutOfStock ? (
-                  "Archived / Out of Stock"
+                  "Sold Out"
                 ) : (
                   <>
-                    <ShoppingBag className="w-4 h-4 stroke-[1.5]" /> Acquire Piece
+                    <ShoppingBag className="w-4 h-4 stroke-[1.5]" /> Add to Bag
                   </>
                 )}
               </button>
 
               <div className="flex items-center justify-between text-[10px] font-mono text-muted uppercase tracking-wider pt-2">
-                <span>Free Insured Transit</span>
+                <span>Free Insured Delivery</span>
                 <span>•</span>
                 <span>7-Day Doorstep Exchange</span>
                 <span>•</span>
-                <span>Handloom Certified</span>
+                <span>100% Genuine Handloom</span>
               </div>
             </div>
 

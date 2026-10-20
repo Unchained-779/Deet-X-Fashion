@@ -67,12 +67,12 @@ export default function StorefrontNavbar() {
         >
           <span
             style={{ fontFamily: "var(--font-editorial)" }}
-            className="text-2xl sm:text-3xl font-normal tracking-[0.3em] uppercase text-center transition-opacity group-hover:opacity-75"
+            className="text-2xl sm:text-3xl font-normal tracking-[0.25em] uppercase text-center transition-opacity group-hover:opacity-75"
           >
-            DEET-X
+            DEETA
           </span>
-          <span className="text-[9px] tracking-[0.4em] uppercase font-mono text-accent opacity-90 -mt-1">
-            Atelier
+          <span className="text-[9px] tracking-[0.35em] uppercase font-mono text-accent opacity-90 -mt-1">
+            Fashion
           </span>
         </Link>
 

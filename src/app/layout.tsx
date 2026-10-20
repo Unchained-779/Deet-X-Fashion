@@ -25,8 +25,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeeT-X | Haute Couture & Ready-to-Wear",
-  description: "Ultra-luxury editorial fashion storefront and archival collections.",
+  title: "Deeta Fashion | Festive, Ethnic & Ready-to-Wear",
+  description: "Handcrafted traditional sarees, festive kurtis, and contemporary wear by Deeta Fashion.",
 };
 
 export default function RootLayout({

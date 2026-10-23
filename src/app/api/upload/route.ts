@@ -19,17 +19,21 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Save to public/uploads directory
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
+    // Save to public/uploads directory if writable (local dev), otherwise fallback to base64 Data URL (serverless/Vercel)
+    const mime = file.type || "image/jpeg";
+    let publicUrl = `data:${mime};base64,${buffer.toString("base64")}`;
 
-    // Clean filename with timestamp
-    const cleanFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const filePath = path.join(uploadDir, cleanFileName);
-
-    await writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/${cleanFileName}`;
+    try {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await mkdir(uploadDir, { recursive: true });
+      const cleanFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+      const filePath = path.join(uploadDir, cleanFileName);
+      await writeFile(filePath, buffer);
+      publicUrl = `/uploads/${cleanFileName}`;
+    } catch (fsErr) {
+      // In serverless environments like Vercel with read-only root, use the compressed base64 URI
+      console.warn("Local filesystem write not available, using inline data URL:", fsErr);
+    }
 
     return NextResponse.json({
       success: true,

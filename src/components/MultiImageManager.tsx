@@ -27,14 +27,69 @@ export default function MultiImageManager({ images, onChange }: MultiImageManage
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [targetSlotIndex, setTargetSlotIndex] = useState<number>(0);
 
+  // Client-side lightweight image compressor to keep payload small and fast
+  const compressImage = (file: File): Promise<Blob> => {
+    return new Promise((resolve) => {
+      // If it's already tiny (< 300KB), return as is
+      if (file.size < 300 * 1024) {
+        return resolve(file);
+      }
+
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.src = objectUrl;
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const maxDim = 1200;
+        let { width, height } = img;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(file);
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(blob);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          0.82
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+      };
+    });
+  };
+
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, slotIdx: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
 
     setUploadingIndex(slotIdx);
     try {
+      const processedBlob = await compressImage(rawFile);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", processedBlob, rawFile.name || "garment.jpg");
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -50,7 +105,7 @@ export default function MultiImageManager({ images, onChange }: MultiImageManage
         alert(data.error || "Failed to upload photo");
       }
     } catch (err) {
-      alert("Error connecting to upload service");
+      alert("Error connecting to upload service. Please try again.");
     } finally {
       setUploadingIndex(null);
       e.target.value = "";

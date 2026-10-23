@@ -2,54 +2,201 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Size } from "@prisma/client";
 
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.get("q")?.trim() || "";
+    const categorySlug = searchParams.get("category")?.trim() || "";
+    const sort = searchParams.get("sort") || "newest";
+    const minPrice = parseFloat(searchParams.get("minPrice") || "0");
+    const maxPrice = parseFloat(searchParams.get("maxPrice") || "1000000");
+
+    let orderBy: any = { createdAt: "desc" };
+    if (sort === "price-low") orderBy = { basePrice: "asc" };
+    if (sort === "price-high") orderBy = { basePrice: "desc" };
+    if (sort === "featured") orderBy = { createdAt: "desc" };
+
+    const products = await prisma.product.findMany({
+      where: {
+        isPublished: true,
+        basePrice: { gte: minPrice, lte: maxPrice },
+        ...(query
+          ? {
+              OR: [
+                { title: { contains: query, mode: "insensitive" } },
+                { description: { contains: query, mode: "insensitive" } },
+                { slug: { contains: query, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+        ...(categorySlug
+          ? {
+              category: {
+                slug: categorySlug,
+              },
+            }
+          : {}),
+      },
+      include: {
+        category: true,
+        variants: true,
+      },
+      orderBy,
+      take: 24,
+    });
+
+    return NextResponse.json({
+      success: true,
+      products,
+      total: products.length,
+    });
+  } catch (error: any) {
+    console.error("Failed to query products:", error);
+    return NextResponse.json({ error: "Failed to search garments" }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
+    const contentType = req.headers.get("content-type") || "";
+    let data: any = {};
 
-    const title = formData.get("title") as string;
-    const slug = (formData.get("slug") as string) || title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const description = formData.get("description") as string;
-    const basePrice = parseFloat(formData.get("basePrice") as string);
-    const categoryId = (formData.get("categoryId") as string) || null;
-    const fabricCare = (formData.get("fabricCare") as string) || "Dry clean only";
-    const countryOfOrigin = (formData.get("countryOfOrigin") as string) || "India";
-    const imageUrl = (formData.get("imageUrl") as string) || null;
+    if (contentType.includes("application/json")) {
+      data = await req.json();
+    } else {
+      const formData = await req.formData();
+      formData.forEach((val, key) => {
+        data[key] = val;
+      });
+    }
 
-    // Initial Variant details
-    const sku = (formData.get("sku") as string) || `DEETA-${Date.now().toString().slice(-4)}`;
-    const size = (formData.get("size") as Size) || Size.FREE_SIZE;
-    const colorName = (formData.get("colorName") as string) || "Standard";
-    const colorHex = (formData.get("colorHex") as string) || "#111111";
-    const stockCount = parseInt(formData.get("stockCount") as string, 10) || 5;
+    const title = data.title as string;
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
 
-    await prisma.product.create({
+    const brand = data.brand || "Deeta Fashion";
+    const subcategory = data.subcategory || "";
+    const fabricType = data.fabricType || "";
+    const craftWork = data.craftWork || "";
+    const occasion = data.occasion || "";
+    const blouseIncluded = data.blouseIncluded === "true" || data.blouseIncluded === true;
+    const isNewArrival = data.isNewArrival === "true" || data.isNewArrival === true;
+    const isBestseller = data.isBestseller === "true" || data.isBestseller === true;
+    const isFeatured = data.isFeatured === "true" || data.isFeatured === true;
+
+    // Build rich formatted description
+    const metadataParts = [];
+    if (brand) metadataParts.push(`Brand: ${brand}`);
+    if (subcategory) metadataParts.push(`Subcategory: ${subcategory}`);
+    if (fabricType) metadataParts.push(`Fabric: ${fabricType}`);
+    if (craftWork) metadataParts.push(`Craft/Work: ${craftWork}`);
+    if (occasion) metadataParts.push(`Occasion: ${occasion}`);
+    if (blouseIncluded) metadataParts.push(`Blouse Piece Included: Yes`);
+    if (data.mrp) metadataParts.push(`MRP: ₹${data.mrp}`);
+    if (data.gstPercent) metadataParts.push(`GST: ${data.gstPercent}%`);
+
+    const metaPrefix = metadataParts.length > 0 ? `[${metadataParts.join(" | ")}]\n\n` : "";
+    const rawDescription = (data.description as string) || `${title} from Deeta Fashion handcrafted collection.`;
+    const fullDescription = `${metaPrefix}${rawDescription}`;
+
+    const basePrice = parseFloat(String(data.sellingPrice || data.basePrice || "1999"));
+    const slug =
+      (data.slug as string) ||
+      title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") +
+        "-" +
+        Date.now().toString().slice(-4);
+
+    const categoryId = data.categoryId && data.categoryId !== "none" ? (data.categoryId as string) : null;
+    const fabricCare = (data.fabricCare as string) || "Dry clean only";
+    const countryOfOrigin = (data.countryOfOrigin as string) || "India";
+
+    // Parse image list
+    let images: string[] = [];
+    if (Array.isArray(data.images)) {
+      images = data.images.filter(Boolean);
+    } else if (typeof data.images === "string") {
+      try {
+        images = JSON.parse(data.images);
+      } catch {
+        images = data.images.split(",").map((s: string) => s.trim()).filter(Boolean);
+      }
+    }
+
+    const primaryImageUrl = (data.imageUrl as string) || images[0] || null;
+
+    // Parse Size & Inventory Matrix
+    let sizeStockMap: { size: Size; stock: number; sku: string; priceOverride?: number }[] = [];
+
+    if (data.sizeMatrix) {
+      try {
+        const matrix = typeof data.sizeMatrix === "string" ? JSON.parse(data.sizeMatrix) : data.sizeMatrix;
+        if (Array.isArray(matrix)) {
+          sizeStockMap = matrix.map((m: any) => ({
+            size: m.size as Size,
+            stock: parseInt(m.stock || "0", 10),
+            sku: m.sku || `DEETA-${title.slice(0, 3).toUpperCase()}-${m.size}-${Date.now().toString().slice(-3)}`,
+            priceOverride: m.price ? parseFloat(m.price) : undefined,
+          }));
+        }
+      } catch (err) {
+        console.warn("Could not parse sizeMatrix:", err);
+      }
+    }
+
+    const colorName = (data.colorName as string) || "Standard";
+    const colorHex = (data.colorHex as string) || "#111111";
+
+    // Fallback if no sizeMatrix provided
+    if (sizeStockMap.length === 0) {
+      const defaultSize = (data.size as Size) || Size.FREE_SIZE;
+      const defaultStock = parseInt(String(data.stockCount || "5"), 10);
+      const defaultSku = (data.sku as string) || `DEETA-${Date.now().toString().slice(-6)}`;
+      sizeStockMap = [{ size: defaultSize, stock: defaultStock, sku: defaultSku }];
+    }
+
+    const createdProduct = await prisma.product.create({
       data: {
         title,
         slug,
-        description,
+        description: fullDescription,
         basePrice,
-        categoryId: categoryId && categoryId !== "none" ? categoryId : null,
+        categoryId,
         fabricCare,
         countryOfOrigin,
-        imageUrl,
+        imageUrl: primaryImageUrl,
         variants: {
-          create: {
-            sku,
-            size,
+          create: sizeStockMap.map((sm) => ({
+            sku: sm.sku,
+            size: sm.size,
             colorName,
             colorHex,
-            stockCount,
-            images: imageUrl ? [imageUrl] : [],
-          },
+            stockCount: sm.stock,
+            priceOverride: sm.priceOverride,
+            images: images.length > 0 ? images : primaryImageUrl ? [primaryImageUrl] : [],
+          })),
         },
+      },
+      include: {
+        variants: true,
       },
     });
 
+    if (contentType.includes("application/json")) {
+      return NextResponse.json({
+        success: true,
+        product: createdProduct,
+      });
+    }
+
     return NextResponse.redirect(new URL("/admin/products", req.url), 303);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create garment:", error);
     return NextResponse.json(
-      { error: "Failed to save garment to shop inventory" },
+      { error: error?.message || "Failed to save garment to shop inventory" },
       { status: 500 }
     );
   }

@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Package, Users, ShoppingCart, AlertTriangle, TrendingUp, Plus } from "lucide-react";
 
+import AdminCatalogToolbar from "@/components/AdminCatalogToolbar";
+
 export default async function AdminDashboard() {
   const totalProducts = await prisma.product.count();
   const totalVariants = await prisma.productVariant.count();
@@ -39,18 +41,19 @@ export default async function AdminDashboard() {
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">E-Commerce Overview</h1>
           <p className="text-sm text-slate-500 mt-1">Live metrics across garments, inventory units, and customer orders</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <AdminCatalogToolbar />
           <Link
             href="/"
-            className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            className="px-3.5 py-2 text-xs font-mono font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
           >
-            View Live Store
+            Storefront
           </Link>
           <Link
             href="/admin/products/new"
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors shadow-sm"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Add Garment
           </Link>
         </div>

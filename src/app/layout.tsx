@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import AuthProvider from "@/components/AuthProvider";
+import GlobalFooter from "@/components/GlobalFooter";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -26,8 +27,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deeta Fashion | Festive, Ethnic & Ready-to-Wear",
-  description: "Handcrafted traditional sarees, festive kurtis, and contemporary wear by Deeta Fashion.",
+  title: "Deeta Fashion | Authentic Indian Handcrafted Ethnic & Couture",
+  description: "Pure Kanjeevaram and Banarasi silk sarees, designer suits, and festive ensembles handcrafted with pride by Deeta Fashion (Rakhi Chandra).",
 };
 
 export default function RootLayout({
@@ -40,10 +41,13 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased bg-background text-primary selection:bg-primary selection:text-background font-sans">
+      <body className="antialiased bg-background text-primary selection:bg-primary selection:text-background font-sans min-h-screen flex flex-col">
         <AuthProvider>
           <SmoothScrollProvider>
-            {children}
+            <div className="flex-1 flex flex-col">
+              {children}
+            </div>
+            <GlobalFooter />
           </SmoothScrollProvider>
         </AuthProvider>
       </body>

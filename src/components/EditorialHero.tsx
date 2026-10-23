@@ -32,10 +32,10 @@ export default function EditorialHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] font-mono text-accent"
+            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/85 backdrop-blur-md border border-[#E5C158] text-[#FDF8E2] text-xs uppercase tracking-[0.25em] font-mono shadow-[0_4px_20px_rgba(0,0,0,0.8)] w-fit"
           >
-            <span className="w-8 h-[1px] bg-accent" />
-            <span>Autumn / Festive Drapery 2026</span>
+            <span className="w-2 h-2 rounded-full bg-[#E5C158] animate-pulse shadow-[0_0_8px_#E5C158]" />
+            <span className="font-bold text-[#FDF8E2] drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">— AUTUMN / FESTIVE CHAPTER 2026</span>
           </motion.div>
 
           <motion.h1

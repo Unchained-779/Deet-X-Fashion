@@ -307,15 +307,15 @@ export default async function PersonalizedCustomerSection() {
         </div>
 
         {/* Tailored Recommendations Grid (Inspired by Amazon's 'Recommended for you' carousel) */}
-        <div>
+        <div id="recommendations" className="scroll-mt-32 pt-8">
           <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#E5E0D8]">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] block">
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] block mb-1 font-semibold">
                 Inspired By Your Royal Taste
               </span>
               <h3
                 style={{ fontFamily: "var(--font-editorial)" }}
-                className="text-2xl tracking-wide font-normal"
+                className="text-2xl sm:text-3xl tracking-wide font-normal pt-1"
               >
                 Recommended For You, {firstName}
               </h3>

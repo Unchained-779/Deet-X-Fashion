@@ -39,7 +39,7 @@ export class InvoiceGenerator {
       .fontSize(10)
       .font('Helvetica')
       .text('Premium Handcrafted Indian & Contemporary Fashion', 50, 75)
-      .text('GSTIN: 07AAAAA0000A1Z5 | Support: support@deetxfashion.com', 50, 90)
+      .text('GSTIN: 07AAAAA0000A1Z5 | Support: chandrarakhi42@gmail.com', 50, 90)
       .moveDown();
 
     // 2. Invoice Details (Right-aligned)

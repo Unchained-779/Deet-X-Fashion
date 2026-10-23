@@ -4,6 +4,10 @@ import CartDrawer from "@/components/CartDrawer";
 import ProductCard from "@/components/ProductCard";
 import EditorialHero from "@/components/EditorialHero";
 import LookbookGrid from "@/components/LookbookGrid";
+import CategoryBentoGrid from "@/components/CategoryBentoGrid";
+import ShopTheLookBanner from "@/components/ShopTheLookBanner";
+import CraftsmanshipTrustStrip from "@/components/CraftsmanshipTrustStrip";
+import CustomerStoriesCarousel from "@/components/CustomerStoriesCarousel";
 import PersonalizedCustomerSection from "@/components/PersonalizedCustomerSection";
 import Link from "next/link";
 import { Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
@@ -45,16 +49,25 @@ export default async function Home({ searchParams }: HomeProps) {
       <StorefrontNavbar />
       <CartDrawer />
 
-      {/* 1. Full-Bleed Runway Hero (100dvh) */}
+      {/* 1. Full-Bleed Runway Hero with High Contrast (100dvh) */}
       <EditorialHero />
 
-      {/* 2. Asymmetric 12-Column Lookbook Grid */}
+      {/* 2. Craftsmanship & Trust Strip (Authentic Silks, Delivery, Tailoring, Razorpay) */}
+      <CraftsmanshipTrustStrip />
+
+      {/* 3. Curated Category Bento Grid (Silk Sarees, Ethnic Suits, Men's Royal, Western) */}
+      <CategoryBentoGrid />
+
+      {/* 4. Asymmetric 12-Column Lookbook Runway Grid */}
       <LookbookGrid />
 
-      {/* 2.5 Personalized Customer Suite (Amazon-inspired royal experience) */}
+      {/* 5. Editorial Hotspot "Shop The Look" Interactive Showcase */}
+      <ShopTheLookBanner />
+
+      {/* 6. Personalized Customer Suite (Amazon-inspired royal experience) */}
       <PersonalizedCustomerSection />
 
-      {/* 3. Editorial Archival Catalog */}
+      {/* 7. The Festive Edit / Curated Garment Catalog */}
       <main id="catalog" className="max-w-7xl mx-auto px-6 sm:px-8 py-20 w-full scroll-mt-24">
         <div className="flex flex-col md:flex-row justify-between items-baseline mb-8 pb-6 border-b border-[#E5E0D8] gap-4">
           <div>
@@ -63,7 +76,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </span>
             <h2
               style={{ fontFamily: "var(--font-editorial)" }}
-              className="text-4xl sm:text-5xl font-normal text-primary"
+              className="text-4xl sm:text-5xl font-normal text-primary leading-[1.25] pt-2 pb-1"
             >
               {category
                 ? `${category.charAt(0).toUpperCase() + category.slice(1)} Collection`
@@ -215,29 +228,8 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      {/* 5. Minimalist Editorial Footer */}
-      <footer className="bg-primary text-background mt-auto py-16 px-6 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-          <div>
-            <span
-              style={{ fontFamily: "var(--font-editorial)" }}
-              className="text-3xl tracking-[0.25em] uppercase font-normal block"
-            >
-              DEETA FASHION
-            </span>
-            <p className="text-xs text-[#FAF8F5]/60 mt-2 max-w-sm font-sans leading-relaxed">
-              Handcrafted festive wear, traditional sarees, and comfortable everyday styles made with pride.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6 font-mono text-[11px] text-[#FAF8F5]/60 tracking-wider">
-            <span>GST COMPLIANT</span>
-            <span className="hidden sm:inline">•</span>
-            <span>ALL-INDIA DELIVERY</span>
-            <span className="hidden sm:inline">•</span>
-            <span>© 2026 DEETA FASHION</span>
-          </div>
-        </div>
-      </footer>
+      {/* 5. Customer Stories & Verified Patron Reviews Carousel */}
+      <CustomerStoriesCarousel />
     </div>
   );
 }

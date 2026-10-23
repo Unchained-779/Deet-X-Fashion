@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 
+import AdminCatalogToolbar from "@/components/AdminCatalogToolbar";
+
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
     include: {
@@ -14,23 +16,34 @@ export default async function ProductsPage() {
   async function deleteProduct(formData: FormData) {
     "use server";
     const productId = formData.get("id") as string;
-    await prisma.product.delete({ where: { id: productId } });
-    revalidatePath("/admin/products");
+    if (!productId) return;
+    try {
+      await prisma.productVariant.deleteMany({ where: { productId } });
+      await prisma.product.delete({ where: { id: productId } });
+      revalidatePath("/admin/products");
+      revalidatePath("/shop");
+      revalidatePath("/");
+    } catch (e) {
+      console.error("Failed to delete product:", e);
+    }
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Garment Catalog</h1>
           <p className="text-sm text-slate-500 mt-1">Manage styles, variants, and physical inventory</p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-sm"
-        >
-          ＋ Add New Garment
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <AdminCatalogToolbar />
+          <Link
+            href="/admin/products/new"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 text-xs font-mono uppercase tracking-wider rounded-lg transition-colors shadow-sm flex items-center gap-1.5"
+          >
+            ＋ Add New Garment
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">

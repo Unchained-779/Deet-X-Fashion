@@ -44,7 +44,7 @@ interface PLPClientProps {
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "FREE_SIZE"];
 
-const FABRICS = ["Silk", "Cotton", "Chanderi", "Georgette", "Linen", "Velvet", "Organza"];
+const FABRICS = ["Silk", "Cotton", "Reyon", "Chanderi", "Georgette", "Linen", "Velvet", "Organza"];
 
 const OCCASIONS = ["Wedding", "Festive", "Casual", "Party", "Workwear"];
 

@@ -38,6 +38,9 @@ const SUBCATEGORIES = [
 ];
 
 const FABRICS = [
+  "Cotton",
+  "Pure Cotton",
+  "Reyon",
   "Pure Kanjeevaram Silk",
   "Banarasi Katan Silk",
   "Chanderi Silk",
